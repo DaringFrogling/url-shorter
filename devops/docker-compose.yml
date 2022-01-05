@@ -43,6 +43,8 @@ services:
       - "5432:5432"
     volumes:
       - ./var/db-data:/var/lib/postgresql/data:rw
+    networks:
+      - url_shorter_network
 
 volumes:
   db-data:

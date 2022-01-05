@@ -1,11 +1,12 @@
 FROM php:8.1-fpm
 
-RUN apt-get update && apt-get install -y zlib1g-dev g++ libicu-dev zip libzip-dev zip vim \
-    && docker-php-ext-install intl opcache pdo pdo_mysql \
+RUN apt-get update && apt-get install -y zlib1g-dev libicu-dev zip libzip-dev libpq-dev zip vim \
+    && docker-php-ext-install intl opcache pdo pdo_pgsql pgsql \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
     && docker-php-ext-configure zip \
-    && docker-php-ext-install zip
+    && docker-php-ext-install zip \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 
 COPY php.ini /usr/local/etc/php/conf.d/
 
