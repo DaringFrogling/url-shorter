@@ -27,7 +27,7 @@ abstract class BaseRepository implements RepositoryInterface
             ->andWhere('e.id = :identifier')
             ->setParameter('identifier', $identifier->getValue())
             ->getQuery()
-            ->getSingleResult();
+            ->getOneOrNullResult();
     }
 
     /**
