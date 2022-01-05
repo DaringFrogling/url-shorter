@@ -3,13 +3,11 @@
 namespace App\Entity\Stats;
 
 use App\Entity\IdentifierInterface;
-use App\Repository\Stats\StatsRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[
-    ORM\Entity(repositoryClass: StatsRepository::class),
     ORM\Table(name: 'statistic')
 ]
 class Stats implements StatsInterface
@@ -19,7 +17,7 @@ class Stats implements StatsInterface
         ORM\Column,
         ORM\GeneratedValue(strategy: 'AUTO'),
     ]
-    private int $id;
+    private IdentifierInterface|string $id;
 
     /**
      * Stats constructor.
@@ -31,7 +29,7 @@ class Stats implements StatsInterface
      * @param DateTimeInterface|null $visitedAt
      */
     public function __construct(
-        #[ORM\Column]
+        #[ORM\Column] // relation should be here
         private IdentifierInterface $linkIdentifier,
 
         #[ORM\Column]
@@ -48,7 +46,7 @@ class Stats implements StatsInterface
     ) {
     }
 
-    public function getId(): int
+    public function getId(): IdentifierInterface|string
     {
         return $this->id;
     }

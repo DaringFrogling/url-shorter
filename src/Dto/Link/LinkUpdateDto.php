@@ -13,7 +13,7 @@ class LinkUpdateDto implements DtoInterface
         public readonly mixed $id,
         public readonly mixed $originalUrl,
         public readonly mixed $title,
-        public readonly mixed $tags,
+        public readonly array $tags,
     ) {
     }
 }

@@ -3,17 +3,13 @@
 namespace App\Entity\Link;
 
 use App\Entity\IdentifierInterface;
-use App\Entity\LinkIdentifier;
 use App\Persistence\Generator\LinkGenerator;
 use App\Repository\Link\LinkRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
-#[
-    ORM\Entity(repositoryClass: LinkRepository::class),
-    ORM\Table(name: 'link')
-]
+#[ORM\Entity(repositoryClass: LinkRepository::class)]
 class Link implements LinkInterface
 {
     #[
@@ -22,7 +18,9 @@ class Link implements LinkInterface
         ORM\GeneratedValue(strategy: 'CUSTOM'),
         ORM\CustomIdGenerator(class: LinkGenerator::class),
     ]
-    private IdentifierInterface $id;
+    // тайп со стрингом - костыль, ибо не успел разобраться
+    // как достать сущность с объектом из базы
+    private IdentifierInterface|string $id;
 
     /**
      * Link constructor.
@@ -34,24 +32,24 @@ class Link implements LinkInterface
      * @param DateTimeInterface|null $updatedAt
      */
     public function __construct(
-        #[ORM\Column]
+        #[ORM\Column(name: 'original_url', type: 'string')]
         private string $originalUrl,
 
-        #[ORM\Column]
+        #[ORM\Column(type: 'string')]
         private string $title,
 
         #[ORM\Column(type: 'simple_array')]
         private array $tags = [],
 
-        #[ORM\Column]
+        #[ORM\Column(name: 'created_at', type: 'datetime')]
         private DateTimeInterface $createdAt = new DateTimeImmutable('now'),
 
-        #[ORM\Column]
+        #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
         private ?DateTimeInterface $updatedAt = null,
     ) {
     }
 
-    public function getId(): IdentifierInterface
+    public function getId(): IdentifierInterface|string
     {
         return $this->id;
     }

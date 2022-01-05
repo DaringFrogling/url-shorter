@@ -2,7 +2,6 @@
 
 namespace App\Persistence\Generator;
 
-use App\Entity\LinkIdentifier;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 
@@ -18,6 +17,6 @@ class LinkGenerator extends AbstractIdGenerator
     {
         $bytes = random_bytes(5);
 
-        return new LinkIdentifier(bin2hex($bytes));
+        return bin2hex($bytes);
     }
 }

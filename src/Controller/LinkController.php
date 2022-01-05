@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Dto\Link\LinkCreateDto;
 use App\Dto\Link\LinkUpdateDto;
+use App\Entity\Link\Link;
+use App\Entity\Link\LinkInterface;
 use App\Entity\LinkIdentifier;
 use App\Repository\Link\LinkRepository;
 use App\Services\Link\LinkServiceInterface;
@@ -19,14 +21,15 @@ class LinkController extends AbstractController
     public function create(Request $request, LinkServiceInterface $linkService): Response
     {
         $request = $request->request->all();
+        // где-то тут должна быть валидация ))
         $createDto = new LinkCreateDto(
-            $request['long_url'],
-            $request['title'],
-            $request['tags'],
+            $request['long_url'] ?? null,
+            $request['title'] ?? null,
+            $request['tags'] ?? [],
         );
         $linkService->create($createDto);
 
-        return new JsonResponse();
+        return new JsonResponse(['status' => 1], Response::HTTP_CREATED);
     }
 
     #[Route('/links/{identifier}', methods: 'PATCH')]
@@ -36,15 +39,16 @@ class LinkController extends AbstractController
         string $identifier
     ): Response {
         $request = $request->request->all();
+        // где-то тут должна быть валидация ))
         $updateDto = new LinkUpdateDto(
-            $identifier,
+            new LinkIdentifier($identifier),
             $request['long_url'],
             $request['title'],
-            $request['tags'],
+            $request['tags'] ?? [],
         );
         $linkService->update($updateDto);
 
-        return new JsonResponse();
+        return new JsonResponse(['status' => 1]);
     }
 
     #[Route('/links/{identifier}', methods: 'DELETE')]
@@ -54,7 +58,7 @@ class LinkController extends AbstractController
     ): Response {
         $linkService->delete(new LinkIdentifier($identifier));
 
-        return new JsonResponse();
+        return new JsonResponse(['status' => 1]);
     }
 
     #[Route('/links/{identifier}', methods: 'GET')]
@@ -64,7 +68,7 @@ class LinkController extends AbstractController
     ): Response {
         $link = $linkService->getByIdentifier(new LinkIdentifier($identifier));
 
-        return new JsonResponse($link);
+        return new JsonResponse($this->normalize($link));
     }
 
     #[Route('/links', methods: 'GET')]
@@ -76,14 +80,38 @@ class LinkController extends AbstractController
         $tag = $request->query->get('tag');
 
         if ($title || $tag) {
-            $links = $linkRepository->findBy([
+            $links = $linkRepository->findBy(Link::class, [
                 'title' => $title,
-                'tags' => $tag
-            ]);
+                'tags' => [$tag],
+            ], null, null);
         } else {
-            $links = $linkRepository->findAll();
+            $links = $linkRepository->findAll(Link::class);
         }
 
-        return new JsonResponse($links);
+        return new JsonResponse($this->normalize($links));
+    }
+
+    private function normalize(array|LinkInterface $data): array
+    {
+        $toReturn = [];
+
+        if (is_array($data)) {
+            /** @var LinkInterface $element */
+            foreach ($data as $element) {
+                $toReturn[] = [
+                    'identifier' => $element->getId(),
+                    'title' => $element->getTitle(),
+                    'tags' => $element->getTags()
+                ];
+            }
+        } elseif ($data instanceof LinkInterface) {
+            $toReturn = [
+                'shortened_link' => $data->getId(),
+                'title' => $data->getTitle(),
+                'tags' => $data->getTags()
+            ];
+        }
+
+        return $toReturn;
     }
 }

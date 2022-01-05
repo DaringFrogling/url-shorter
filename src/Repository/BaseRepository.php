@@ -3,30 +3,59 @@
 namespace App\Repository;
 
 use App\Entity\EntityInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\IdentifierInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  *
  */
-abstract class BaseRepository extends ServiceEntityRepository implements RepositoryInterface
+abstract class BaseRepository implements RepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry, string $entityClass)
-    {
-        parent::__construct($registry, $entityClass);
+    public function __construct(
+        protected EntityManagerInterface $em,
+    ) {
     }
 
     /**
      * @inheritDoc
-     *
-     * @throws OptimisticLockException
-     * @throws ORMException
+     */
+    public function find(string $entityFQCN, IdentifierInterface $identifier): ?EntityInterface
+    {
+        return $this->em->createQueryBuilder()
+            ->select('e')
+            ->from($entityFQCN, 'e')
+            ->andWhere('e.id = :identifier')
+            ->setParameter('identifier', $identifier->getValue())
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findAll(string $entityFQCN): array
+    {
+        return $this->em->createQueryBuilder()
+            ->select('e')
+            ->from($entityFQCN, 'e')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @inheritDoc
      */
     public function save(EntityInterface $entity): void
     {
-        $this->_em->persist($entity);
-        $this->_em->flush($entity);
+        $this->em->persist($entity);
+        $this->em->flush($entity);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(EntityInterface $entity): void
+    {
+        $this->em->remove($entity);
     }
 }

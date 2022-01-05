@@ -2,30 +2,39 @@
 
 namespace App\Repository\Link;
 
-use App\Entity\IdentifierInterface;
 use App\Entity\Link\Link;
 use App\Repository\BaseRepository;
-use Doctrine\ORM\ORMException;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\DBAL\ParameterType;
 
 /**
- * @method Link|null find($id, $lockMode = null, $lockVersion = null)
- * @method Link|null findOneBy(array $criteria, array $orderBy = null)
- * @method Link[]    findAll()
- * @method Link[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
  */
 class LinkRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Link::class);
-    }
-
     /**
-     * @throws ORMException
+     * @inheritDoc
      */
-    public function delete(IdentifierInterface $identifier): void
+    public function findBy(string $entityFQCN, mixed $criteria, ?array $orderBy, ?int $limit): array
     {
-        $this->_em->remove($identifier);
+        $qb = $this->em->createQueryBuilder()
+            ->select('l')
+            ->from(Link::class, 'l');
+
+        if (!empty($criteria['title'])) {
+            $qb->andWhere('l.title = :title')
+                ->setParameter('title', $criteria['title'], ParameterType::STRING);
+        }
+
+        if (!empty($criteria['tags'])) {
+            $tags = $criteria['tags'];
+            foreach ($tags as $tag) {
+                $qb->andWhere('l.tags like :tag')
+                    ->setParameter('tag', '%' . $tag . '%');
+            }
+        }
+
+        return $qb->setMaxResults($limit ?? 15)
+            ->getQuery()
+            ->getResult();
     }
 }

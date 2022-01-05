@@ -9,8 +9,6 @@ use App\Entity\IdentifierInterface;
 use App\Entity\Link\Link;
 use App\Entity\Link\LinkInterface;
 use App\Repository\RepositoryInterface;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -25,7 +23,7 @@ class LinkService implements LinkServiceInterface
 
     public function getByIdentifier(IdentifierInterface $identifier): LinkInterface
     {
-        $link = $this->linkRepository->find($identifier->getValue());
+        $link = $this->linkRepository->find(Link::class, $identifier);
 
         if (!$link) {
             throw new NotFoundHttpException(ExceptionMessages::LINK_NOT_FOUND);
@@ -58,15 +56,11 @@ class LinkService implements LinkServiceInterface
         $this->linkRepository->save($link);
     }
 
-    /**
-     * @throws OptimisticLockException
-     * @throws ORMException
-     */
     public function delete(IdentifierInterface $identifier): void
     {
         $link = $this->getByIdentifier($identifier);
 
-        $this->linkRepository->delete($link->getId());
+        $this->linkRepository->delete($link);
         $this->linkRepository->save($link);
     }
 }

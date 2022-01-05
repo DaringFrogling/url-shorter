@@ -16,9 +16,6 @@ services:
             - '../src/ConstantBag/'
             - '../src/Dto/'
 
-    App\Repository\Link\LinkRepository: ~
-    App\Repository\Stats\StatsRepository: ~
-
     App\Services\Link\LinkService:
         arguments:
             - '@App\Repository\Link\LinkRepository'
