@@ -14,9 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ *
+ */
 class LinkController extends AbstractController
 {
-    #[Route('/links', methods: 'POST')]
+    #[Route(path: '/links', methods: 'POST')]
     public function create(Request $request, LinkServiceInterface $linkService): Response
     {
         $request = $request->request->all();
@@ -31,7 +34,7 @@ class LinkController extends AbstractController
         return new JsonResponse(['status' => 1], Response::HTTP_CREATED);
     }
 
-    #[Route('/links/{identifier}', methods: 'PATCH')]
+    #[Route(path: '/links/{identifier<\w{10}>}', methods: 'PATCH')]
     public function update(
         Request $request,
         LinkServiceInterface $linkService,
@@ -50,7 +53,7 @@ class LinkController extends AbstractController
         return new JsonResponse(['status' => 1]);
     }
 
-    #[Route('/links/{identifier}', methods: 'DELETE')]
+    #[Route(path: '/links/{identifier<\w{10}>}', methods: 'DELETE')]
     public function delete(
         LinkServiceInterface $linkService,
         string $identifier
@@ -60,7 +63,7 @@ class LinkController extends AbstractController
         return new JsonResponse(['status' => 1]);
     }
 
-    #[Route('/links/{identifier}', methods: 'GET')]
+    #[Route(path: '/links/{identifier<\w{10}>}', methods: 'GET')]
     public function link(
         LinkServiceInterface $linkService,
         string $identifier
@@ -70,7 +73,7 @@ class LinkController extends AbstractController
         return new JsonResponse($this->normalize($link));
     }
 
-    #[Route('/links', methods: 'GET')]
+    #[Route(path: '/links', methods: 'GET')]
     public function index(
         Request $request,
         LinkRepository $linkRepository,
@@ -96,6 +99,10 @@ class LinkController extends AbstractController
         return new JsonResponse($this->normalize($links));
     }
 
+    /**
+     * @param LinkInterface[]|LinkInterface $data
+     * @return array
+     */
     private function normalize(array|LinkInterface $data): array
     {
         $toReturn = [];
@@ -104,14 +111,14 @@ class LinkController extends AbstractController
             /** @var LinkInterface $element */
             foreach ($data as $element) {
                 $toReturn[] = [
-                    'identifier' => $element->getId(),
+                    'shortened_uri' => $element->getIdentifier()->getValue(),
                     'title' => $element->getTitle(),
                     'tags' => $element->getTags()
                 ];
             }
         } elseif ($data instanceof LinkInterface) {
             $toReturn = [
-                'shortened_link' => $data->getId(),
+                'shortened_uri' => $data->getIdentifier()->getValue(),
                 'title' => $data->getTitle(),
                 'tags' => $data->getTags()
             ];

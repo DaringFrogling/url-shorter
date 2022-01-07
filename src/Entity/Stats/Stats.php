@@ -7,9 +7,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
-#[
-    ORM\Table(name: 'statistic')
-]
+#[ORM\Table(name: 'statistic')]
 class Stats implements StatsInterface
 {
     #[

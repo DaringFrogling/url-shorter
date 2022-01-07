@@ -7,18 +7,15 @@ services:
 
     App\:
         resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
-            - '../src/Migrations/'
-            - '../src/ConstantBag/'
-            - '../src/Dto/'
+        exclude: '../src/{Kernel.php, ConstantBag, Dto, Entity, Migrations, tests}'
+
+    App\Repository\Link\LinkRepositoryInterface: 'App\Repository\Link\LinkRepository'
 
     App\Services\Link\LinkService:
         arguments:
             - '@App\Repository\Link\LinkRepository'
+
+    App\Persistence\Generator\LinkGenerator: ~
 
     App\EventListener\ApiContentTypeEventListener:
         tags:

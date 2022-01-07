@@ -26,7 +26,7 @@ class LinkIdentifierType extends Type
         return new LinkIdentifier($value);
     }
 
-    #[Pure] public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    #[Pure] public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if ($value instanceof LinkIdentifier) {
             $value = $value->getValue();
