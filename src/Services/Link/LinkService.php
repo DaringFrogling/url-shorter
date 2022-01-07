@@ -8,7 +8,7 @@ use App\Dto\Link\LinkUpdateDto;
 use App\Entity\IdentifierInterface;
 use App\Entity\Link\Link;
 use App\Entity\Link\LinkInterface;
-use App\Repository\RepositoryInterface;
+use App\Repository\Link\LinkRepositoryInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -17,13 +17,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class LinkService implements LinkServiceInterface
 {
     public function __construct(
-        private RepositoryInterface $linkRepository
+        private LinkRepositoryInterface $linkRepository
     ) {
     }
 
     public function getByIdentifier(IdentifierInterface $identifier): LinkInterface
     {
-        $link = $this->linkRepository->find(Link::class, $identifier);
+        $link = $this->linkRepository->find($identifier);
 
         if (!$link) {
             throw new NotFoundHttpException(ExceptionMessages::LINK_NOT_FOUND);

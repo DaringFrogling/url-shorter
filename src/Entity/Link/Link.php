@@ -3,24 +3,22 @@
 namespace App\Entity\Link;
 
 use App\Entity\IdentifierInterface;
-use App\Persistence\Generator\LinkGenerator;
+use App\Entity\LinkIdentifier;
 use App\Repository\Link\LinkRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Embedded;
+use Doctrine\ORM\Mapping\Entity;
 
-#[ORM\Entity(repositoryClass: LinkRepository::class)]
+#[Entity(repositoryClass: LinkRepository::class)]
 class Link implements LinkInterface
 {
-    #[
-        ORM\Id,
-        ORM\Column,
-        ORM\GeneratedValue(strategy: 'CUSTOM'),
-        ORM\CustomIdGenerator(class: LinkGenerator::class),
-    ]
-    // тайп со стрингом - костыль, ибо не успел разобраться
-    // как достать сущность с объектом из базы
-    private IdentifierInterface|string $id;
+    #[Embedded(class: LinkIdentifier::class, columnPrefix: false)]
+    private IdentifierInterface $identifier;
+
+    #[Column(type: 'string')]
+    private string $title;
 
     /**
      * Link constructor.
@@ -32,26 +30,26 @@ class Link implements LinkInterface
      * @param DateTimeInterface|null $updatedAt
      */
     public function __construct(
-        #[ORM\Column(name: 'original_url', type: 'string')]
+        #[Column(name: 'original_url', type: 'string')]
         private string $originalUrl,
 
-        #[ORM\Column(type: 'string')]
-        private string $title,
+        string $title,
 
-        #[ORM\Column(type: 'simple_array')]
+        #[Column(type: 'simple_array')]
         private array $tags = [],
 
-        #[ORM\Column(name: 'created_at', type: 'datetime')]
+        #[Column(name: 'created_at', type: 'datetime')]
         private DateTimeInterface $createdAt = new DateTimeImmutable('now'),
 
-        #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
+        #[Column(name: 'updated_at', type: 'datetime', nullable: true)]
         private ?DateTimeInterface $updatedAt = null,
     ) {
+        $this->title = mb_strtolower($title);
     }
 
-    public function getId(): IdentifierInterface|string
+    public function getIdentifier(): IdentifierInterface
     {
-        return $this->id;
+        return $this->identifier;
     }
 
     public function getOriginalUrl(): string

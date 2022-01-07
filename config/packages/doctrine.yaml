@@ -21,9 +21,9 @@ doctrine:
                 auto_mapping: true
                 connection: default
                 mappings:
-                    Link:
+                    App:
                         is_bundle: false
                         type: attribute
-                        dir: '%kernel.project_dir%/src/Entity/Link'
-                        prefix: 'App\Entity\Link\Link'
-                        alias: Link
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        alias: App

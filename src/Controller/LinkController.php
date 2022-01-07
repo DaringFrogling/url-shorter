@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Dto\Link\LinkCreateDto;
 use App\Dto\Link\LinkUpdateDto;
-use App\Entity\Link\Link;
 use App\Entity\Link\LinkInterface;
 use App\Entity\LinkIdentifier;
 use App\Repository\Link\LinkRepository;
@@ -76,16 +75,22 @@ class LinkController extends AbstractController
         Request $request,
         LinkRepository $linkRepository,
     ): Response {
-        $title = $request->query->get('title');
-        $tag = $request->query->get('tag');
+        $query = $request->query->all();
 
-        if ($title || $tag) {
-            $links = $linkRepository->findBy(Link::class, [
+        // Тут можно было сделать query dto объект для более удобного поиска
+        $title = $query['query']['title'] ?? null;
+        $tags = isset($query['query']['tags']) && !empty($query['query']['tags'])
+            ? explode(',', $query['query']['tags'])
+            : [];
+        // Где-то тут должна быть валидация для query dto
+        // Обращение к репозиторию нужно заменить на сервис с аргументом в сигнатуре с query dto объектом
+        if ($title || !empty($tags)) {
+            $links = $linkRepository->findBy([
                 'title' => $title,
-                'tags' => [$tag],
-            ], null, null);
+                'tags' => $tags,
+            ]);
         } else {
-            $links = $linkRepository->findAll(Link::class);
+            $links = $linkRepository->findAll();
         }
 
         return new JsonResponse($this->normalize($links));

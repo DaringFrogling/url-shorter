@@ -17,7 +17,7 @@ class Stats implements StatsInterface
         ORM\Column,
         ORM\GeneratedValue(strategy: 'AUTO'),
     ]
-    private IdentifierInterface|string $id;
+    private IdentifierInterface $id;
 
     /**
      * Stats constructor.
@@ -46,7 +46,7 @@ class Stats implements StatsInterface
     ) {
     }
 
-    public function getId(): IdentifierInterface|string
+    public function getIdentifier(): IdentifierInterface
     {
         return $this->id;
     }

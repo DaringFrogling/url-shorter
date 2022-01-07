@@ -5,7 +5,6 @@ namespace App\Tests\Integration\Services\Link;
 use App\ConstantBag\ExceptionMessages;
 use App\Dto\Link\LinkCreateDto;
 use App\Dto\Link\LinkUpdateDto;
-use App\Entity\Link\Link;
 use App\Entity\Link\LinkInterface;
 use App\Entity\LinkIdentifier;
 use App\Repository\Link\LinkRepository;
@@ -36,19 +35,18 @@ class LinkServiceTest extends WebTestCase
         $link = $this->createAndReturnCreatedLink();
 
         $this->assertNotNull($link);
-        $this->assertInstanceOf(LinkInterface::class, $link);
     }
 
     public function testUpdate(): void
     {
         $link = $this->createAndReturnCreatedLink();
 
-        $updateDto = new LinkUpdateDto(new LinkIdentifier($link->getId()), 'https://new-link.co', 'new title', ['new-tag']);
+        $updateDto = new LinkUpdateDto($link->getIdentifier(), 'https://new-link.co', 'new title', ['new-tag']);
         $this->linkService->update($updateDto);
-        $updatedLink = $this->linkService->getByIdentifier(new LinkIdentifier($link->getId()));
+        $updatedLink = $this->linkService->getByIdentifier($link->getIdentifier());
 
-        $this->assertInstanceOf(LinkInterface::class, $updatedLink);
-        $this->assertEquals($updatedLink->getId(), $link->getId());
+        $this->assertNotNull($link);
+        $this->assertEquals($updatedLink->getIdentifier(), $link->getIdentifier());
         $this->assertEquals('https://new-link.co', $updatedLink->getOriginalUrl());
         $this->assertEquals('new title', $updatedLink->getTitle());
         $this->assertEquals(['new-tag'], $updatedLink->getTags());
@@ -57,21 +55,21 @@ class LinkServiceTest extends WebTestCase
     public function testDelete(): void
     {
         $link = $this->createAndReturnCreatedLink();
-        $this->linkService->delete(new LinkIdentifier($link->getId()));
+        $this->linkService->delete($link->getIdentifier());
 
         $this->expectException(NotFoundHttpException::class);
         $this->expectExceptionMessage(ExceptionMessages::LINK_NOT_FOUND);
 
-        $this->linkService->getByIdentifier(new LinkIdentifier($link->getId()));
+        $this->linkService->getByIdentifier($link->getIdentifier());
     }
 
     public function testGetByIdentifier(): void
     {
         $link = $this->createAndReturnCreatedLink();
 
-        $foundedLink = $this->linkService->getByIdentifier(new LinkIdentifier($link->getId()));
+        $foundedLink = $this->linkService->getByIdentifier($link->getIdentifier());
 
-        $this->assertInstanceOf(LinkInterface::class, $foundedLink);
+        $this->assertNotNull($foundedLink);
     }
 
     public function testGetByIdentifierWithException(): void
@@ -88,10 +86,8 @@ class LinkServiceTest extends WebTestCase
         $this->linkService->create($createDto);
 
         $links = $this->linkRepository->findBy(
-            Link::class,
             ['title' => 'My link'],
-            null,
-            1
+            1,
         );
 
         return $links[0];
