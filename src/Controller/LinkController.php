@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Dto\Link\LinkCreateDto;
 use App\Dto\Link\LinkUpdateDto;
 use App\Entity\Link\LinkInterface;
-use App\Entity\LinkIdentifier;
+use App\Entity\StringIdentifier;
 use App\Repository\Link\LinkRepository;
 use App\Services\Link\LinkServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,7 +43,7 @@ class LinkController extends AbstractController
         $request = $request->request->all();
         // где-то тут должна быть валидация ))
         $updateDto = new LinkUpdateDto(
-            new LinkIdentifier($identifier),
+            new StringIdentifier($identifier),
             $request['long_url'],
             $request['title'],
             $request['tags'] ?? [],
@@ -58,7 +58,7 @@ class LinkController extends AbstractController
         LinkServiceInterface $linkService,
         string $identifier
     ): Response {
-        $linkService->delete(new LinkIdentifier($identifier));
+        $linkService->delete(new StringIdentifier($identifier));
 
         return new JsonResponse(['status' => 1]);
     }
@@ -68,7 +68,7 @@ class LinkController extends AbstractController
         LinkServiceInterface $linkService,
         string $identifier
     ): Response {
-        $link = $linkService->getByIdentifier(new LinkIdentifier($identifier));
+        $link = $linkService->getByShortenedUri(new StringIdentifier($identifier));
 
         return new JsonResponse($this->normalize($link));
     }
@@ -111,14 +111,16 @@ class LinkController extends AbstractController
             /** @var LinkInterface $element */
             foreach ($data as $element) {
                 $toReturn[] = [
-                    'shortened_uri' => $element->getIdentifier()->getValue(),
+                    'identifier' => $element->getIdentifier()->getValue(),
+                    'shortened_uri' => $element->getShortenedUri()->getValue(),
                     'title' => $element->getTitle(),
                     'tags' => $element->getTags()
                 ];
             }
         } elseif ($data instanceof LinkInterface) {
             $toReturn = [
-                'shortened_uri' => $data->getIdentifier()->getValue(),
+                'identifier' => $data->getIdentifier()->getValue(),
+                'shortened_uri' => $data->getShortenedUri()->getValue(),
                 'title' => $data->getTitle(),
                 'tags' => $data->getTags()
             ];

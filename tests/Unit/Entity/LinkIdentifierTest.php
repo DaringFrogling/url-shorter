@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\LinkIdentifier;
+use App\Entity\StringIdentifier;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -10,22 +10,22 @@ use PHPUnit\Framework\TestCase;
  */
 class LinkIdentifierTest extends TestCase
 {
-    public function test__construct()
+    public function test__construct(): void
     {
-        $identifier = new LinkIdentifier('12ASDca12a');
+        $identifier = new StringIdentifier('12ASDca12a');
 
         $this->assertEquals('12ASDca12a', $identifier->getValue());
     }
 
-    public function test__constructWithException()
+    public function test__constructWithException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        new LinkIdentifier('12A_SDca12a');
+        $this->expectException(\UnexpectedValueException::class);
+        new StringIdentifier('12A_SDca12a');
 
-        $this->expectException(\InvalidArgumentException::class);
-        new LinkIdentifier('12AsSD');
+        $this->expectException(\UnexpectedValueException::class);
+        new StringIdentifier('12AsSD');
 
-        $this->expectException(\InvalidArgumentException::class);
-        new LinkIdentifier('12asad12ewaAsSD');
+        $this->expectException(\UnexpectedValueException::class);
+        new StringIdentifier('12asad12ewaAsSD');
     }
 }

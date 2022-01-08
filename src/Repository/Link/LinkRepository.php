@@ -23,10 +23,24 @@ class LinkRepository implements LinkRepositoryInterface
      *
      * @throws NonUniqueResultException
      */
-    public function find(IdentifierInterface $identifier): ?EntityInterface
+    public function findByIdentifier(IdentifierInterface $identifier): ?EntityInterface
     {
         return $this->createQueryBuilder()
             ->andWhere('l.identifier.id = :identifier')
+            ->setParameter('identifier', $identifier->getValue())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @throws NonUniqueResultException
+     */
+    public function findByShortenedUri(IdentifierInterface $identifier): ?EntityInterface
+    {
+        return $this->createQueryBuilder()
+            ->andWhere('l.shortenedUri.id = :identifier')
             ->setParameter('identifier', $identifier->getValue())
             ->getQuery()
             ->getOneOrNullResult();

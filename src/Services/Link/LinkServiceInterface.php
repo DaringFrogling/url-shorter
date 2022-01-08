@@ -6,6 +6,7 @@ use App\Dto\Link\LinkCreateDto;
 use App\Dto\Link\LinkUpdateDto;
 use App\Entity\IdentifierInterface;
 use App\Entity\Link\LinkInterface;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  *
@@ -13,12 +14,22 @@ use App\Entity\Link\LinkInterface;
 interface LinkServiceInterface
 {
     /**
+     * Gets Link by its shortened URI identifier.
+     *
+     * @param IdentifierInterface $identifier
+     * @return LinkInterface
+     * @throws EntityNotFoundException
+     */
+    public function getByIdentifier(IdentifierInterface $identifier): LinkInterface;
+
+    /**
      * Gets Link by its identifier.
      *
      * @param IdentifierInterface $identifier
      * @return LinkInterface
+     * @throws EntityNotFoundException
      */
-    public function getByIdentifier(IdentifierInterface $identifier): LinkInterface;
+    public function getByShortenedUri(IdentifierInterface $identifier): LinkInterface;
 
     /**
      * Create Link.

@@ -17,7 +17,15 @@ interface LinkRepositoryInterface
      * @param IdentifierInterface $identifier
      * @return EntityInterface|null
      */
-    public function find(IdentifierInterface $identifier): ?EntityInterface;
+    public function findByIdentifier(IdentifierInterface $identifier): ?EntityInterface;
+
+    /**
+     * Finds by shortened uri identifier.
+     *
+     * @param IdentifierInterface $identifier
+     * @return EntityInterface|null
+     */
+    public function findByShortenedUri(IdentifierInterface $identifier): ?EntityInterface;
 
     /**
      * Finds all entities.

@@ -23,23 +23,25 @@ class LinkTest extends TestCase
 
     }
 
-    public function test__construct()
+    public function test__construct(): void
     {
         $this->assertIsString($this->link->getOriginalUrl());
         $this->assertEquals('https://link.to/resource', $this->link->getOriginalUrl());
 
         $this->assertIsString($this->link->getTitle());
-        $this->assertEquals('Link to resource', $this->link->getTitle());
+        $this->assertEquals('link to resource', $this->link->getTitle());
 
         $this->assertNotNull($this->link->getTags());
         $this->assertEmpty($this->link->getTags());
 
-        $this->assertInstanceOf(\DateTimeInterface::class, $this->link->getCreatedAt());
-        
         $this->assertNull($this->link->getUpdatedAt());
+
+        $this->expectError();
+        $this->expectErrorMessage('Typed property App\Entity\Link\Link::$shortenedUri must not be accessed before initialization');
+        $this->link->getShortenedUri();
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $this->link->update(
             'https://new-link.to/resource',
@@ -55,5 +57,9 @@ class LinkTest extends TestCase
         $this->assertCount(2, $this->link->getTags());
 
         $this->assertNotNull($this->link->getUpdatedAt());
+
+        $this->expectError();
+        $this->expectErrorMessage('Typed property App\Entity\Link\Link::$shortenedUri must not be accessed before initialization');
+        $this->link->getShortenedUri();
     }
 }

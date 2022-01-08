@@ -5,13 +5,14 @@ namespace App\Tests\Integration\Services\Link;
 use App\ConstantBag\ExceptionMessages;
 use App\Dto\Link\LinkCreateDto;
 use App\Dto\Link\LinkUpdateDto;
+use App\Entity\IntIdentifier;
 use App\Entity\Link\LinkInterface;
-use App\Entity\LinkIdentifier;
+use App\Entity\StringIdentifier;
 use App\Repository\Link\LinkRepository;
 use App\Services\Link\LinkService;
 use App\Services\Link\LinkServiceInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  *
@@ -37,32 +38,47 @@ class LinkServiceTest extends WebTestCase
         $this->assertNotNull($link);
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function testUpdate(): void
     {
         $link = $this->createAndReturnCreatedLink();
+        $updateDto = new LinkUpdateDto(
+            $link->getShortenedUri(),
+            'https://new-link.co',
+            'new title',
+            ['new-tag']
+        );
 
-        $updateDto = new LinkUpdateDto($link->getIdentifier(), 'https://new-link.co', 'new title', ['new-tag']);
         $this->linkService->update($updateDto);
-        $updatedLink = $this->linkService->getByIdentifier($link->getIdentifier());
+        $updatedLink = $this->linkService->getByShortenedUri($link->getShortenedUri());
 
         $this->assertNotNull($link);
         $this->assertEquals($updatedLink->getIdentifier(), $link->getIdentifier());
+        $this->assertEquals($updatedLink->getShortenedUri(), $link->getShortenedUri());
         $this->assertEquals('https://new-link.co', $updatedLink->getOriginalUrl());
         $this->assertEquals('new title', $updatedLink->getTitle());
         $this->assertEquals(['new-tag'], $updatedLink->getTags());
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function testDelete(): void
     {
         $link = $this->createAndReturnCreatedLink();
-        $this->linkService->delete($link->getIdentifier());
+        $this->linkService->delete($link->getShortenedUri());
 
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(EntityNotFoundException::class);
         $this->expectExceptionMessage(ExceptionMessages::LINK_NOT_FOUND);
 
-        $this->linkService->getByIdentifier($link->getIdentifier());
+        $this->linkService->getByShortenedUri($link->getShortenedUri());
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function testGetByIdentifier(): void
     {
         $link = $this->createAndReturnCreatedLink();
@@ -74,10 +90,31 @@ class LinkServiceTest extends WebTestCase
 
     public function testGetByIdentifierWithException(): void
     {
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(EntityNotFoundException::class);
         $this->expectExceptionMessage(ExceptionMessages::LINK_NOT_FOUND);
 
-        $this->linkService->getByIdentifier(new LinkIdentifier('123QWDasAa'));
+        $this->linkService->getByIdentifier(new IntIdentifier(99));
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function testGetByShortenedIdentifier(): void
+    {
+        $link = $this->createAndReturnCreatedLink();
+
+        $foundedLink = $this->linkService->getByShortenedUri($link->getShortenedUri());
+
+        $this->assertNotNull($foundedLink);
+    }
+
+
+    public function testGetByShortenedIdentifierWithException(): void
+    {
+        $this->expectException(EntityNotFoundException::class);
+        $this->expectExceptionMessage(ExceptionMessages::LINK_NOT_FOUND);
+
+        $this->linkService->getByShortenedUri(new StringIdentifier('123QWDasAa'));
     }
 
     private function createAndReturnCreatedLink(): LinkInterface

@@ -3,19 +3,24 @@
 namespace App\Entity\Link;
 
 use App\Entity\IdentifierInterface;
-use App\Entity\LinkIdentifier;
+use App\Entity\IntIdentifier;
+use App\Entity\StringIdentifier;
 use App\Repository\Link\LinkRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Entity;
+use InvalidArgumentException;
 
 #[Entity(repositoryClass: LinkRepository::class)]
 class Link implements LinkInterface
 {
-    #[Embedded(class: LinkIdentifier::class, columnPrefix: false)]
+    #[Embedded(class: IntIdentifier::class, columnPrefix: false)]
     private IdentifierInterface $identifier;
+
+    #[Embedded(class: StringIdentifier::class)]
+    private IdentifierInterface $shortenedUri;
 
     #[Column(type: 'string')]
     private string $title;
@@ -50,6 +55,19 @@ class Link implements LinkInterface
     public function getIdentifier(): IdentifierInterface
     {
         return $this->identifier;
+    }
+
+    public function getShortenedUri(): IdentifierInterface
+    {
+        return $this->shortenedUri;
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function shortenedUri(string $identifier): void
+    {
+        $this->shortenedUri = new StringIdentifier($identifier);
     }
 
     public function getOriginalUrl(): string

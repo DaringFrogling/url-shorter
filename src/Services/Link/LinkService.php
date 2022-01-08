@@ -9,7 +9,7 @@ use App\Entity\IdentifierInterface;
 use App\Entity\Link\Link;
 use App\Entity\Link\LinkInterface;
 use App\Repository\Link\LinkRepositoryInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  *
@@ -23,18 +23,32 @@ class LinkService implements LinkServiceInterface
 
     public function getByIdentifier(IdentifierInterface $identifier): LinkInterface
     {
-        $link = $this->linkRepository->find($identifier);
+        $link = $this->linkRepository->findByIdentifier($identifier);
 
         if (!$link) {
-            throw new NotFoundHttpException(ExceptionMessages::LINK_NOT_FOUND);
+            throw new EntityNotFoundException(ExceptionMessages::LINK_NOT_FOUND);
         }
 
         return $link;
     }
 
+    public function getByShortenedUri(IdentifierInterface $identifier): LinkInterface
+    {
+        $link = $this->linkRepository->findByShortenedUri($identifier);
+
+        if (!$link) {
+            throw new EntityNotFoundException(ExceptionMessages::LINK_NOT_FOUND);
+        }
+
+        return $link;
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
     public function update(LinkUpdateDto $linkUpdateDto): void
     {
-        $link = $this->getByIdentifier($linkUpdateDto->id);
+        $link = $this->getByShortenedUri($linkUpdateDto->shortenedUriIdentifier);
 
         $link->update(
             $linkUpdateDto->originalUrl,
@@ -56,9 +70,12 @@ class LinkService implements LinkServiceInterface
         $this->linkRepository->save($link);
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function delete(IdentifierInterface $identifier): void
     {
-        $link = $this->getByIdentifier($identifier);
+        $link = $this->getByShortenedUri($identifier);
 
         $this->linkRepository->delete($link);
         $this->linkRepository->save($link);

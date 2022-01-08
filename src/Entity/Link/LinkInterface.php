@@ -3,6 +3,7 @@
 namespace App\Entity\Link;
 
 use App\Entity\EntityInterface;
+use App\Entity\IdentifierInterface;
 use DateTimeInterface;
 
 /**
@@ -10,6 +11,10 @@ use DateTimeInterface;
  */
 interface LinkInterface extends EntityInterface
 {
+    public function getShortenedUri(): IdentifierInterface;
+
+    public function shortenedUri(string $identifier): void;
+
     public function getOriginalUrl(): string;
 
     public function getTitle(): string;

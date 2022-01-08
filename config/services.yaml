@@ -7,9 +7,9 @@ services:
 
     App\:
         resource: '../src/'
-        exclude: '../src/{Kernel.php, ConstantBag, Dto, Entity, Migrations, tests}'
+        exclude: '../src/{Kernel.php,ConstantBag,Dto,Entity,EventListener,EventSubscriber,Migrations,tests}'
 
-    App\Repository\Link\LinkRepositoryInterface: 'App\Repository\Link\LinkRepository'
+    App\Repository\Link\LinkRepositoryInterface: '@App\Repository\Link\LinkRepository'
 
     App\Services\Link\LinkService:
         arguments:
@@ -20,3 +20,8 @@ services:
     App\EventListener\ApiContentTypeEventListener:
         tags:
             - { name: kernel.event_listener }
+
+    App\EventSubscriber\Doctrine\LinkPrePersistEventListener:
+        arguments:
+            - '@App\Persistence\Generator\LinkGenerator'
+        tags: { name: doctrine.event_subscriber }
