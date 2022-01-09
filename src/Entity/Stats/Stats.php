@@ -3,88 +3,66 @@
 namespace App\Entity\Stats;
 
 use App\Entity\IdentifierInterface;
+use App\Entity\IntIdentifier;
+use App\Entity\Link\Link;
+use App\Entity\Link\LinkInterface;
+use App\Repository\Stats\StatsRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Embedded;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
-#[ORM\Table(name: 'statistic')]
+#[
+    Table(name: 'link_stats'),
+    Entity(repositoryClass: StatsRepository::class)
+]
 class Stats implements StatsInterface
 {
-    #[
-        ORM\Id,
-        ORM\Column,
-        ORM\GeneratedValue(strategy: 'AUTO'),
-    ]
-    private IdentifierInterface $id;
+    #[Embedded(class: IntIdentifier::class, columnPrefix: false)]
+    private IdentifierInterface $identifier;
 
     /**
      * Stats constructor.
      *
-     * @param IdentifierInterface $linkIdentifier
-     * @param int $totalViews
-     * @param int $uniqueViews
+     * @param LinkInterface $link
      * @param Visitor $visitor
-     * @param DateTimeInterface|null $visitedAt
+     * @param DateTimeInterface $visitedAt
      */
     public function __construct(
-        #[ORM\Column] // relation should be here
-        private IdentifierInterface $linkIdentifier,
+        #[
+            ManyToOne(targetEntity: Link::class),
+            JoinColumn(name: 'link_id', referencedColumnName: 'id')
+        ]
+        private LinkInterface $link,
 
-        #[ORM\Column]
-        private int $totalViews,
-
-        #[ORM\Column]
-        private int $uniqueViews,
-
-        #[ORM\Column]
+        #[Embedded(class: Visitor::class, columnPrefix: false)]
         private Visitor $visitor,
 
-        #[ORM\Column]
-        private ?DateTimeInterface $visitedAt = new DateTimeImmutable('now'),
+        #[Column(name: 'visited_at', type: 'datetime')]
+        private DateTimeInterface $visitedAt = new DateTimeImmutable('now'),
     ) {
     }
 
     public function getIdentifier(): IdentifierInterface
     {
-        return $this->id;
+        return $this->identifier;
     }
 
-    /**
-     * @return IdentifierInterface
-     */
-    public function getLinkIdentifier(): IdentifierInterface
+    public function getLink(): LinkInterface
     {
-        return $this->linkIdentifier;
+        return $this->link;
     }
 
-    /**
-     * @return int
-     */
-    public function getTotalViews(): int
-    {
-        return $this->totalViews;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUniqueViews(): int
-    {
-        return $this->uniqueViews;
-    }
-
-    /**
-     * @return Visitor
-     */
     public function getVisitor(): Visitor
     {
         return $this->visitor;
     }
 
-    /**
-     * @return DateTimeImmutable|DateTimeInterface|null
-     */
-    public function getVisitedAt(): DateTimeImmutable|DateTimeInterface|null
+    public function getVisitedAt(): DateTimeInterface
     {
         return $this->visitedAt;
     }

@@ -9,11 +9,21 @@ services:
         resource: '../src/'
         exclude: '../src/{Kernel.php,ConstantBag,Dto,Entity,EventListener,EventSubscriber,Migrations,tests}'
 
-    App\Repository\Link\LinkRepositoryInterface: '@App\Repository\Link\LinkRepository'
+    App\Repository\Link\LinkRepository:
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+
+    App\Repository\Stats\StatsRepository:
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
 
     App\Services\Link\LinkService:
         arguments:
             - '@App\Repository\Link\LinkRepository'
+
+    App\Services\Stats\StatsService:
+        arguments:
+            - '@App\Repository\Stats\StatsRepository'
 
     App\Persistence\Generator\LinkGenerator: ~
 

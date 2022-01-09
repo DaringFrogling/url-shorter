@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Entity\Link;
 
 use App\Entity\Link\Link;
+use App\Entity\Link\LinkInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -10,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  */
 class LinkTest extends TestCase
 {
-    private Link $link;
+    private LinkInterface $link;
 
     protected function setUp(): void
     {

@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityNotFoundException;
 interface LinkServiceInterface
 {
     /**
-     * Gets Link by its shortened URI identifier.
+     * Gets Link by its identifier.
      *
      * @param IdentifierInterface $identifier
      * @return LinkInterface
@@ -23,7 +23,7 @@ interface LinkServiceInterface
     public function getByIdentifier(IdentifierInterface $identifier): LinkInterface;
 
     /**
-     * Gets Link by its identifier.
+     * Gets Link by its shortened URI identifier.
      *
      * @param IdentifierInterface $identifier
      * @return LinkInterface

@@ -2,7 +2,6 @@
 
 namespace App\Repository\Link;
 
-use App\Entity\EntityInterface;
 use App\Entity\IdentifierInterface;
 use App\Entity\Link\Link;
 use App\Entity\Link\LinkInterface;
@@ -23,7 +22,7 @@ class LinkRepository implements LinkRepositoryInterface
      *
      * @throws NonUniqueResultException
      */
-    public function findByIdentifier(IdentifierInterface $identifier): ?EntityInterface
+    public function findByIdentifier(IdentifierInterface $identifier): ?LinkInterface
     {
         return $this->createQueryBuilder()
             ->andWhere('l.identifier.id = :identifier')
@@ -37,7 +36,7 @@ class LinkRepository implements LinkRepositoryInterface
      *
      * @throws NonUniqueResultException
      */
-    public function findByShortenedUri(IdentifierInterface $identifier): ?EntityInterface
+    public function findByShortenedUri(IdentifierInterface $identifier): ?LinkInterface
     {
         return $this->createQueryBuilder()
             ->andWhere('l.shortenedUri.id = :identifier')

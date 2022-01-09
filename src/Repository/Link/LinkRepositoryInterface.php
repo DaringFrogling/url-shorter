@@ -2,7 +2,6 @@
 
 namespace App\Repository\Link;
 
-use App\Entity\EntityInterface;
 use App\Entity\IdentifierInterface;
 use App\Entity\Link\LinkInterface;
 
@@ -15,17 +14,17 @@ interface LinkRepositoryInterface
      * Finds entity by identifier.
      *
      * @param IdentifierInterface $identifier
-     * @return EntityInterface|null
+     * @return LinkInterface|null
      */
-    public function findByIdentifier(IdentifierInterface $identifier): ?EntityInterface;
+    public function findByIdentifier(IdentifierInterface $identifier): ?LinkInterface;
 
     /**
      * Finds by shortened uri identifier.
      *
      * @param IdentifierInterface $identifier
-     * @return EntityInterface|null
+     * @return LinkInterface|null
      */
-    public function findByShortenedUri(IdentifierInterface $identifier): ?EntityInterface;
+    public function findByShortenedUri(IdentifierInterface $identifier): ?LinkInterface;
 
     /**
      * Finds all entities.

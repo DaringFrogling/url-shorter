@@ -14,9 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- *
- */
+#[Route(host: 'url-shorter.local')]
 class LinkController extends AbstractController
 {
     #[Route(path: '/links', methods: 'POST')]
@@ -113,16 +111,22 @@ class LinkController extends AbstractController
                 $toReturn[] = [
                     'identifier' => $element->getIdentifier()->getValue(),
                     'shortened_uri' => $element->getShortenedUri()->getValue(),
+                    'original_url' => $element->getOriginalUrl(),
                     'title' => $element->getTitle(),
-                    'tags' => $element->getTags()
+                    'tags' => $element->getTags(),
+                    'created_at' => $element->getCreatedAt()->getTimestamp(),
+                    'updated_at' => $element->getUpdatedAt()?->getTimestamp(),
                 ];
             }
         } elseif ($data instanceof LinkInterface) {
             $toReturn = [
                 'identifier' => $data->getIdentifier()->getValue(),
                 'shortened_uri' => $data->getShortenedUri()->getValue(),
+                'original_url' => $data->getOriginalUrl(),
                 'title' => $data->getTitle(),
-                'tags' => $data->getTags()
+                'tags' => $data->getTags(),
+                'created_at' => $data->getCreatedAt()->getTimestamp(),
+                'updated_at' => $data->getUpdatedAt()?->getTimestamp(),
             ];
         }
 

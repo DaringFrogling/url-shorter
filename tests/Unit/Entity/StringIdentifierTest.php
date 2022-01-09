@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * 
  */
-class LinkIdentifierTest extends TestCase
+class StringIdentifierTest extends TestCase
 {
     public function test__construct(): void
     {

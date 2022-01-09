@@ -3,25 +3,24 @@
 namespace App\Tests\Integration\Services\Link;
 
 use App\ConstantBag\ExceptionMessages;
-use App\Dto\Link\LinkCreateDto;
 use App\Dto\Link\LinkUpdateDto;
 use App\Entity\IntIdentifier;
-use App\Entity\Link\LinkInterface;
 use App\Entity\StringIdentifier;
 use App\Repository\Link\LinkRepository;
+use App\Repository\Link\LinkRepositoryInterface;
 use App\Services\Link\LinkService;
 use App\Services\Link\LinkServiceInterface;
+use App\Tests\Integration\BaseIntegrationTestCase;
 use Doctrine\ORM\EntityNotFoundException;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  *
  */
-class LinkServiceTest extends WebTestCase
+class LinkServiceTest extends BaseIntegrationTestCase
 {
     private LinkServiceInterface $linkService;
 
-    private LinkRepository $linkRepository;
+    private LinkRepositoryInterface $linkRepository;
 
     protected function setUp(): void
     {
@@ -115,18 +114,5 @@ class LinkServiceTest extends WebTestCase
         $this->expectExceptionMessage(ExceptionMessages::LINK_NOT_FOUND);
 
         $this->linkService->getByShortenedUri(new StringIdentifier('123QWDasAa'));
-    }
-
-    private function createAndReturnCreatedLink(): LinkInterface
-    {
-        $createDto = new LinkCreateDto('https://link.co', 'My link', ['The tag']);
-        $this->linkService->create($createDto);
-
-        $links = $this->linkRepository->findBy(
-            ['title' => 'My link'],
-            1,
-        );
-
-        return $links[0];
     }
 }

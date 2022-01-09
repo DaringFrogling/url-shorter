@@ -9,26 +9,20 @@ use Doctrine\ORM\Mapping\Embeddable;
 class Visitor
 {
     public function __construct(
-        #[Column]
+        #[Column(name: 'ip_address', type: 'string')]
         private string $ip,
 
-        #[Column]
-        private string $userAgent,
+        #[Column(name: 'user_agent', type: 'json')]
+        private array $userAgent,
     ) {
     }
 
-    /**
-     * @return string
-     */
     public function getIp(): string
     {
         return $this->ip;
     }
 
-    /**
-     * @return string
-     */
-    public function getUserAgent(): string
+    public function getUserAgent(): array
     {
         return $this->userAgent;
     }

@@ -10,9 +10,6 @@ doctrine:
                 password: main
                 driver: pdo_pgsql
                 server_version: 14
-        types:
-            link: App\Persistence\Type\LinkIdentifierType
-
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         default_entity_manager: default
