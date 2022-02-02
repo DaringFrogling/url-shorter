@@ -1,0 +1,35 @@
+POST http://{{host}}/links
+Accept: application/json
+Content-Type: application/json
+
+{
+  "long_url": "https://my-link.cc/images",
+  "title": "my link",
+  "tags": "tag"
+}
+
+###
+PATCH http://{{host}}/links/{{identifier}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "long_url": "https://new-link.cc/images",
+  "title": "My new link",
+  "tags": ""
+}
+
+###
+DELETE http://{{host}}/links/{{identifier}}
+Accept: application/json
+Content-Type: application/json
+
+###
+GET http://{{host}}/links
+Accept: application/json
+Content-Type: application/json
+
+###
+GET http://{{host}}/links/{{identifier}}
+Accept: application/json
+Content-Type: application/json

@@ -1,0 +1,37 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude: '../src/{Kernel.php,ConstantBag,Dto,Entity,EventListener,EventSubscriber,Migrations,tests}'
+
+    App\Repository\Link\LinkRepository:
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+
+    App\Repository\Stats\StatsRepository:
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+
+    App\Services\Link\LinkService:
+        arguments:
+            - '@App\Repository\Link\LinkRepository'
+
+    App\Services\Stats\StatsService:
+        arguments:
+            - '@App\Repository\Stats\StatsRepository'
+
+    App\Persistence\Generator\LinkGenerator: ~
+
+    App\EventListener\ApiContentTypeEventListener:
+        tags:
+            - { name: kernel.event_listener }
+
+    App\EventSubscriber\Doctrine\LinkPrePersistEventListener:
+        arguments:
+            - '@App\Persistence\Generator\LinkGenerator'
+        tags: { name: doctrine.event_subscriber }

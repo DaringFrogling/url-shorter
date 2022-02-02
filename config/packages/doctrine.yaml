@@ -1,0 +1,26 @@
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                host: url-shorter.db
+                port: 5432
+                dbname: main
+                user: main
+                password: main
+                driver: pdo_pgsql
+                server_version: 14
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        default_entity_manager: default
+        entity_managers:
+            default:
+                auto_mapping: true
+                connection: default
+                mappings:
+                    App:
+                        is_bundle: false
+                        type: attribute
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        alias: App
